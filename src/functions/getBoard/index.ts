@@ -2,7 +2,7 @@ import { APIGatewayProxyEvent } from "aws-lambda";
 
 import { formatJSONResponse } from "@libs/APIResponses";
 import Dynamo from "@libs/Dynamo";
-import { BoardRecord } from "src/types/dynamo";
+import { BoardRecord, IdeaRecord } from "src/types/dynamo";
 
 export const handler = async (event: APIGatewayProxyEvent) => {
   try {
@@ -19,20 +19,32 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       });
     }
 
-    const data = await Dynamo.get<BoardRecord>({
+    const boardData = await Dynamo.get<BoardRecord>({
       tableName,
       pkValue: boardId,
     });
 
-    if (!data) {
+    if (!boardData) {
       return formatJSONResponse({
         body: {},
       });
     } else {
-      const { pk, sk, ...board } = data;
+      const { pk, sk, ...board } = boardData;
+
+      const ideasData = await Dynamo.query<IdeaRecord>({
+        tableName,
+        index: "index1",
+        pkValue: `idea-${boardId}`,
+        pkKey: "pk",
+      });
+
+      const ideas = ideasData.map(({ pk, sk, boardId, ...rest }) => rest);
 
       return formatJSONResponse({
-        body: board,
+        body: {
+          ...board,
+          ideas,
+        },
       });
     }
   } catch (error) {
