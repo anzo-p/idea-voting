@@ -1,5 +1,13 @@
 import { AWS } from "@serverless/typescript";
 
+import { Authorizer } from "src/types/authorizer";
+
+export const authorizer: Authorizer = {
+  name: "authorizer",
+  type: "COGNITO_USER_POOLS",
+  arn: { "Fn::GetAtt": ["CognitoUserPool", "Arn"] },
+};
+
 const functions: AWS["functions"] = {
   createBoard: {
     handler: "src/functions/createBoard/index.handler",
@@ -8,6 +16,7 @@ const functions: AWS["functions"] = {
         http: {
           method: "POST",
           path: "/boards",
+          authorizer,
         },
       },
     ],
@@ -44,6 +53,7 @@ const functions: AWS["functions"] = {
         http: {
           method: "POST",
           path: "/ideas",
+          authorizer,
         },
       },
     ],
@@ -56,6 +66,7 @@ const functions: AWS["functions"] = {
         http: {
           method: "POST",
           path: "/ideas/{ideaId}",
+          authorizer,
         },
       },
     ],
