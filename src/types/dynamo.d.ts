@@ -18,3 +18,11 @@ export interface IdeaRecord {
   description?: string;
   date: number;
 }
+
+export interface VoteRecord {
+  id: string;
+  pk: string;
+  sk: string;
+  userId: string,
+  ideaId: string;
+}

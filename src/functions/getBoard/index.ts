@@ -38,12 +38,26 @@ export const handler = async (event: APIGatewayProxyEvent) => {
         pkKey: "pk",
       });
 
-      const ideas = ideasData.map(({ pk, sk, boardId, ...rest }) => rest);
+      const ideas = ideasData.map(async ({ pk, sk, boardId, ...idea }) => {
+        const votes = await Dynamo.query<IdeaRecord>({
+          tableName,
+          index: "index1",
+          pkKey: "pk",
+          pkValue: `vote-${idea.id}`,
+        });
+
+        return {
+          ...idea,
+          votes: votes.length,
+        };
+      });
+
+      const response = (await Promise.all(ideas)).sort((a, b) => b.votes - a.votes);
 
       return formatJSONResponse({
         body: {
           ...board,
-          ideas,
+          ideas: response,
         },
       });
     }
