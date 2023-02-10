@@ -2,6 +2,7 @@ import type { AWS } from "@serverless/typescript";
 
 import functions from "./serverless/functions";
 import DynamoResources from "./serverless/dynamodb";
+import CognitoResources from "./serverless/cognito";
 
 const serverlessConfiguration: AWS = {
   service: "service-5-idea-voting",
@@ -34,6 +35,7 @@ const serverlessConfiguration: AWS = {
   resources: {
     Resources: {
       ...DynamoResources,
+      ...CognitoResources,
     },
     Outputs: {
       DynamoTableName: {
@@ -41,6 +43,14 @@ const serverlessConfiguration: AWS = {
         Export: {
           Name: "DynamoTableName",
         },
+      },
+      CognitoUserPoolId: {
+        Value: {
+          Ref: "CognitoUserPool",
+        },
+        Export: {
+          Name: "${sls:stage}-${self:service}-user-pool-id",
+        }
       },
     },
   },
