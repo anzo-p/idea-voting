@@ -12,6 +12,18 @@ const functions: AWS["functions"] = {
       },
     ],
   },
+
+  listBoards: {
+    handler: "src/functions/listBoards/index.handler",
+    events: [
+      {
+        http: {
+          method: "GET",
+          path: "/boards",
+        },
+      },
+    ],
+  },
 };
 
 export default functions;
