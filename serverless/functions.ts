@@ -16,7 +16,8 @@ const functions: AWS["functions"] = {
         http: {
           method: "POST",
           path: "/boards",
-          authorizer,
+          // this is how aws cognito route protection works, tho cannot easily work with these in Postman..
+          // authorizer,
         },
       },
     ],
@@ -53,7 +54,7 @@ const functions: AWS["functions"] = {
         http: {
           method: "POST",
           path: "/ideas",
-          authorizer,
+          // authorizer,
         },
       },
     ],
@@ -66,7 +67,7 @@ const functions: AWS["functions"] = {
         http: {
           method: "POST",
           path: "/ideas/{ideaId}",
-          authorizer,
+          // authorizer,
         },
       },
     ],

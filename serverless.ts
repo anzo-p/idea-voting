@@ -1,17 +1,37 @@
 import type { AWS } from "@serverless/typescript";
 
 import functions from "./serverless/functions";
-import DynamoResources from "./serverless/dynamodb";
 import CognitoResources from "./serverless/cognito";
+import DynamoResources from "./serverless/dynamodb";
 
 const serverlessConfiguration: AWS = {
-  service: "service-5-idea-voting",
+  custom: {
+    esbuild: {
+      bundle: true,
+      concurrency: 10,
+      define: { "require.resolve": undefined },
+      exclude: ["aws-sdk"],
+      minify: false,
+      platform: "node",
+      sourcemap: true,
+      target: "node16",
+    },
+    tables: {
+      singleTable: "${sls:stage}-${self:service}-single-table",
+    },
+  },
   frameworkVersion: "3",
+  functions,
   plugins: ["serverless-esbuild"],
   provider: {
-    name: "aws",
-    runtime: "nodejs16.x",
-    region: "eu-west-1",
+    apiGateway: {
+      minimumCompressionSize: 1024,
+      shouldStartNameWithService: true,
+    },
+    environment: {
+      AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
+      singleTable: "${self:custom.tables.singleTable}",
+    },
     iamRoleStatements: [
       {
         Effect: "Allow",
@@ -22,53 +42,33 @@ const serverlessConfiguration: AWS = {
         ],
       },
     ],
-    apiGateway: {
-      minimumCompressionSize: 1024,
-      shouldStartNameWithService: true,
-    },
-    environment: {
-      AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
-      singleTable: "${self:custom.tables.singleTable}",
-    },
+    name: "aws",
+    region: "eu-west-1",
+    runtime: "nodejs16.x",
   },
-  functions,
   resources: {
-    Resources: {
-      ...DynamoResources,
-      ...CognitoResources,
-    },
     Outputs: {
-      DynamoTableName: {
-        Value: "${self:custom.tables.singleTable}",
-        Export: {
-          Name: "DynamoTableName",
-        },
-      },
       CognitoUserPoolId: {
         Value: {
           Ref: "CognitoUserPool",
         },
         Export: {
           Name: "${sls:stage}-${self:service}-user-pool-id",
-        }
+        },
+      },
+      DynamoTableName: {
+        Value: "${self:custom.tables.singleTable}",
+        Export: {
+          Name: "DynamoTableName",
+        },
       },
     },
-  },
-  custom: {
-    tables: {
-      singleTable: "${sls:stage}-${self:service}-single-table",
-    },
-    esbuild: {
-      bundle: true,
-      minify: false,
-      sourcemap: true,
-      exclude: ["aws-sdk"],
-      target: "node16",
-      define: { "require.resolve": undefined },
-      platform: "node",
-      concurrency: 10,
+    Resources: {
+      ...CognitoResources,
+      ...DynamoResources,
     },
   },
+  service: "service-5-idea-voting",
 };
 
 module.exports = serverlessConfiguration;

@@ -3,7 +3,6 @@ import {
   BatchWriteCommand,
   BatchWriteCommandInput,
   DeleteCommand,
-  DeleteCommandInput,
   GetCommand,
   PutCommand,
   PutCommandInput,
@@ -16,21 +15,6 @@ import {
 const ddbClient = new DynamoDBClient({});
 
 type Item = Record<string, AttributeValue>;
-
-const isTest = process.env.JEST_WORKER_ID;
-const isServerlessOffline = process.env.IS_OFFLINE;
-const config = {
-  convertEmptyValues: true,
-  region: process.env.region || "eu-central-1",
-  ...(isTest && {
-    endpoint: "http://localhost:8000",
-    sslEnabled: false,
-    region: "local-env",
-  }),
-  ...(isServerlessOffline && {
-    endpoint: "http://localhost:8005",
-  }),
-};
 
 const Dynamo = {
   get: async <T = Item>({
@@ -60,6 +44,7 @@ const Dynamo = {
 
     return res.Item as T;
   },
+
   write: async <T = Item>({ data, tableName }: { data: { [key: string]: any }; tableName: string }) => {
     const params: PutCommandInput = {
       TableName: tableName,
@@ -68,6 +53,7 @@ const Dynamo = {
     await ddbClient.send(new PutCommand(params));
     return params.Item as T;
   },
+
   delete: async ({
     pkKey = "id",
     pkValue,
@@ -100,6 +86,7 @@ const Dynamo = {
 
     return await ddbClient.send(new DeleteCommand(params));
   },
+
   query: async <T = Item>({
     tableName,
     index,
@@ -174,6 +161,7 @@ const Dynamo = {
 
     return res.Items as T[];
   },
+  
   update: async ({
     tableName,
     pkKey,
