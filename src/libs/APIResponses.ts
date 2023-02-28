@@ -18,7 +18,6 @@ export const formatJSONResponse = ({
       "Content-Type": "application/json",
       "Access-Control-Allow-Methods": "*",
       "Access-Control-Allow-Origin": "*",
-      "Content-type": "application/json",
       ...headers,
     },
     statusCode,

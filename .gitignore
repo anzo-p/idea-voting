@@ -12,6 +12,7 @@ lib
 
 .serverless
 build
+.esbuild
 
 .DS_Store
 
