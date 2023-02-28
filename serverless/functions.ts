@@ -16,7 +16,6 @@ const functions: AWS["functions"] = {
         http: {
           method: "POST",
           path: "/boards",
-          // this is how aws cognito route protection works, tho cannot easily work with these in Postman..
           // authorizer,
         },
       },

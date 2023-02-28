@@ -45,7 +45,7 @@ const Dynamo = {
     return res.Item as T;
   },
 
-  write: async <T = Item>({ data, tableName }: { data: { [key: string]: any }; tableName: string }) => {
+  write: async <T = Item>({ tableName, data }: { tableName: string; data: { [key: string]: any } }) => {
     const params: PutCommandInput = {
       TableName: tableName,
       Item: { ...data },
@@ -161,7 +161,7 @@ const Dynamo = {
 
     return res.Items as T[];
   },
-  
+
   update: async ({
     tableName,
     pkKey,
@@ -203,8 +203,8 @@ const Dynamo = {
     return res.Attributes;
   },
 
-  batchWrite: async ({ tableName, tableData }: { tableName: string; tableData: any[] }) => {
-    const formattedRequestItems = tableData.map((item) => ({
+  batchWrite: async ({ tableName, data }: { tableName: string; data: any[] }) => {
+    const formattedRequestItems = data.map((item) => ({
       PutRequest: {
         Item: item,
       },

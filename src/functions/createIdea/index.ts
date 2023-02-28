@@ -8,9 +8,9 @@ import { IdeaRecord } from "src/types/dynamo";
 
 export const handler = async (event: APIGatewayProxyEvent) => {
   try {
-    const body = JSON.parse(event.body!);
-
     const tableName = process.env.singleTable;
+
+    const body = JSON.parse(event.body!);
 
     const validationError = validate(body);
 
@@ -30,7 +30,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       date: Date.now(),
     };
 
-    await Dynamo.write({ data, tableName });
+    await Dynamo.write({ tableName, data });
 
     return formatJSONResponse({
       body: {

@@ -49,7 +49,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       ideaId,
     };
 
-    await Dynamo.write({ data, tableName });
+    await Dynamo.write({ tableName, data });
 
     return formatJSONResponse({
       body: {
