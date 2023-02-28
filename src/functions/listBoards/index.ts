@@ -8,7 +8,7 @@ export const handler = async () => {
 
     const boards = await Dynamo.query<BoardRecord>({
       tableName,
-      index: "index1",
+      index: "gsi1",
       pkKey: "pk",
       pkValue: "board",
       limit: 10,

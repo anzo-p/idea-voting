@@ -27,7 +27,7 @@ const DynamoResources: AWS["resources"]["Resources"] = {
       ],
       GlobalSecondaryIndexes: [
         {
-          IndexName: "index1",
+          IndexName: "gsi1",
           KeySchema: [
             {
               AttributeName: "pk",

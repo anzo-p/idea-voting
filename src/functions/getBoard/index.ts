@@ -33,7 +33,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
 
       const ideasData = await Dynamo.query<IdeaRecord>({
         tableName,
-        index: "index1",
+        index: "gsi1",
         pkValue: `idea-${boardId}`,
         pkKey: "pk",
       });
@@ -41,7 +41,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       const ideas = ideasData.map(async ({ pk, sk, boardId, ...idea }) => {
         const votes = await Dynamo.query<IdeaRecord>({
           tableName,
-          index: "index1",
+          index: "gsi1",
           pkKey: "pk",
           pkValue: `vote-${idea.id}`,
         });

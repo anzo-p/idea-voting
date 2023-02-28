@@ -38,7 +38,7 @@ const serverlessConfiguration: AWS = {
         Action: "dynamodb:*",
         Resource: [
           "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.tables.singleTable}",
-          "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.tables.singleTable}/index/index1",
+          "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.tables.singleTable}/index/gsi1",
         ],
       },
     ],

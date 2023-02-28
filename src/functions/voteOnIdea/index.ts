@@ -25,7 +25,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
 
     const alreadyVoted = await Dynamo.query({
       tableName,
-      index: "index1",
+      index: "gsi1",
       pkKey: "pk",
       pkValue: `vote-${ideaId}`,
       skKey: "sk",
