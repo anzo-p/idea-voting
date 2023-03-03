@@ -1,5 +1,4 @@
 import { AttributeValue, DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
 
 import {
   DeleteCommand,
@@ -12,16 +11,7 @@ import {
   UpdateCommandInput,
 } from "@aws-sdk/lib-dynamodb";
 
-const marshallOptions = {
-  removeUndefinedValues: true,
-};
-
-const unmarshallOptions = {};
-
-const translateConfig = { marshallOptions, unmarshallOptions };
-
 const client = new DynamoDBClient({});
-const docClient = DynamoDBDocument.from(client, translateConfig);
 
 type Item = Record<string, AttributeValue>;
 
@@ -31,7 +21,8 @@ const Dynamo = {
       TableName: tableName,
       Item: { ...data },
     };
-    await docClient.send(new PutCommand(params));
+
+    await client.send(new PutCommand(params));
     return params.Item as T;
   },
 
@@ -71,7 +62,7 @@ const Dynamo = {
       params.Key[skKey] = skValue;
     }
 
-    const res = await docClient.send(new UpdateCommand(params));
+    const res = await client.send(new UpdateCommand(params));
 
     return res.Attributes;
   },
@@ -99,7 +90,7 @@ const Dynamo = {
       params.Key[skKey] = skValue;
     }
 
-    const res = await docClient.send(new GetCommand(params));
+    const res = await client.send(new GetCommand(params));
 
     return res.Item as T;
   },
@@ -174,7 +165,7 @@ const Dynamo = {
     }
 
     const command = new QueryCommand(params);
-    const res = await docClient.send(command);
+    const res = await client.send(command);
 
     return res.Items as T[];
   },
@@ -209,7 +200,7 @@ const Dynamo = {
       params.Key[skKey] = skValue;
     }
 
-    return await docClient.send(new DeleteCommand(params));
+    return await client.send(new DeleteCommand(params));
   },
 };
 
