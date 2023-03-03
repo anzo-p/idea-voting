@@ -51,7 +51,11 @@ describe("formatJSONResponse", () => {
       "Header-2": "value-2",
     };
 
-    const response = formatJSONResponse({ body: "test", statusCode: 200, headers });
+    const response = formatJSONResponse({
+      body: "test",
+      statusCode: 200,
+      headers,
+    });
 
     expect(response.headers).toEqual({
       ...defaultHeaders,

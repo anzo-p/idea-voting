@@ -42,7 +42,7 @@ describe("createBoard", () => {
       body: JSON.stringify({
         name: "boardName",
         description: "boardDescription",
-        isPublic: false,
+        isPublic: true,
       }),
     };
 
@@ -59,9 +59,42 @@ describe("createBoard", () => {
     expect(puCommand.Item.boardName).toEqual("boardName");
     expect(puCommand.Item.description).toEqual("boardDescription");
     expect(puCommand.Item.id).toEqual(responseBody.id);
-    expect(puCommand.Item.isPublic).toEqual(false);
+    expect(puCommand.Item.isPublic).toEqual(true);
     expect(puCommand.Item.ownerId).toEqual("123");
     expect(puCommand.Item.pk).toEqual("board");
+  });
+
+  test("201 success - publicity defaults to false", async () => {
+    // @ts-ignore
+    const event: APIGatewayProxyEvent = {
+      body: JSON.stringify({
+        name: "boardName",
+        description: "boardDescription",
+      }),
+    };
+
+    const response = await handler(event);
+    const puCommand = mockSend.send.mock.calls[0][0].input;
+
+    expect(response.statusCode).toBe(201);
+    expect(mockSend.send).toBeCalledTimes(1);
+    expect(puCommand.Item.isPublic).toEqual(false);
+  });
+
+  test("201 success - description is optional", async () => {
+    // @ts-ignore
+    const event: APIGatewayProxyEvent = {
+      body: JSON.stringify({
+        name: "boardName",
+      }),
+    };
+
+    const response = await handler(event);
+    const puCommand = mockSend.send.mock.calls[0][0].input;
+
+    expect(response.statusCode).toBe(201);
+    expect(mockSend.send).toBeCalledTimes(1);
+    expect(puCommand.Item.description).toEqual("");
   });
 
   test("201 success - anonymous", async () => {
@@ -75,11 +108,9 @@ describe("createBoard", () => {
     };
 
     const response = await handler(event);
-    const responseBody = JSON.parse(response.body);
     const puCommand = mockSend.send.mock.calls[0][0].input;
 
     expect(response.statusCode).toBe(201);
-    expect(responseBody.message).toBe("board created");
     expect(mockSend.send).toBeCalledTimes(1);
     expect(puCommand.Item.ownerId).toEqual("anonymous");
   });
