@@ -1,7 +1,7 @@
 import { AttributeValue, DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
+
 import {
-  BatchWriteCommand,
-  BatchWriteCommandInput,
   DeleteCommand,
   GetCommand,
   PutCommand,
@@ -12,11 +12,70 @@ import {
   UpdateCommandInput,
 } from "@aws-sdk/lib-dynamodb";
 
-const ddbClient = new DynamoDBClient({});
+const marshallOptions = {
+  removeUndefinedValues: true,
+};
+
+const unmarshallOptions = {};
+
+const translateConfig = { marshallOptions, unmarshallOptions };
+
+const client = new DynamoDBClient({});
+const docClient = DynamoDBDocument.from(client, translateConfig);
 
 type Item = Record<string, AttributeValue>;
 
 const Dynamo = {
+  write: async <T = Item>({ tableName, data }: { tableName: string; data: { [key: string]: any } }) => {
+    const params: PutCommandInput = {
+      TableName: tableName,
+      Item: { ...data },
+    };
+    await docClient.send(new PutCommand(params));
+    return params.Item as T;
+  },
+
+  update: async ({
+    tableName,
+    pkKey,
+    pkValue,
+    skKey,
+    skValue,
+    updateKey,
+    updateValue,
+  }: {
+    tableName: string;
+    pkKey: string;
+    pkValue: string;
+    skKey?: string;
+    skValue?: string;
+    updateKey: string;
+    updateValue: string;
+  }) => {
+    const params: UpdateCommandInput = {
+      TableName: tableName,
+      Key: { [pkKey]: pkValue },
+      UpdateExpression: `set #updateKey = :updateValue`,
+      ExpressionAttributeValues: {
+        ":updateValue": updateValue,
+        ":pkValue": pkValue,
+      },
+      ExpressionAttributeNames: {
+        "#updateKey": updateKey,
+        "#pkKey": pkKey,
+      },
+      ReturnValues: "ALL_NEW",
+      ConditionExpression: `#pkKey = :pkValue`,
+    };
+    if (skKey && skValue) {
+      params.Key[skKey] = skValue;
+    }
+
+    const res = await docClient.send(new UpdateCommand(params));
+
+    return res.Attributes;
+  },
+
   get: async <T = Item>({
     pkKey = "id",
     pkValue,
@@ -40,51 +99,9 @@ const Dynamo = {
       params.Key[skKey] = skValue;
     }
 
-    const res = await ddbClient.send(new GetCommand(params));
+    const res = await docClient.send(new GetCommand(params));
 
     return res.Item as T;
-  },
-
-  write: async <T = Item>({ tableName, data }: { tableName: string; data: { [key: string]: any } }) => {
-    const params: PutCommandInput = {
-      TableName: tableName,
-      Item: { ...data },
-    };
-    await ddbClient.send(new PutCommand(params));
-    return params.Item as T;
-  },
-
-  delete: async ({
-    pkKey = "id",
-    pkValue,
-    skKey,
-    skValue,
-    tableName,
-  }: {
-    pkKey?: string;
-    pkValue: string;
-    skKey?: string;
-    skValue?: string;
-    tableName: string;
-  }) => {
-    const params = {
-      TableName: tableName,
-      Key: {
-        [pkKey]: pkValue,
-      },
-      ExpressionAttributeNames: {
-        "#pkKey": pkKey,
-      },
-      ExpressionAttributeValues: {
-        ":pkValue": pkValue,
-      },
-      ConditionExpression: `#pkKey = :pkValue`,
-    };
-    if (skKey && skValue) {
-      params.Key[skKey] = skValue;
-    }
-
-    return await ddbClient.send(new DeleteCommand(params));
   },
 
   query: async <T = Item>({
@@ -157,80 +174,43 @@ const Dynamo = {
     }
 
     const command = new QueryCommand(params);
-    const res = await ddbClient.send(command);
+    const res = await docClient.send(command);
 
     return res.Items as T[];
   },
 
-  update: async ({
-    tableName,
-    pkKey,
+  delete: async ({
+    pkKey = "id",
     pkValue,
     skKey,
     skValue,
-    updateKey,
-    updateValue,
+    tableName,
   }: {
-    tableName: string;
-    pkKey: string;
+    pkKey?: string;
     pkValue: string;
     skKey?: string;
     skValue?: string;
-    updateKey: string;
-    updateValue: string;
+    tableName: string;
   }) => {
-    const params: UpdateCommandInput = {
+    const params = {
       TableName: tableName,
-      Key: { [pkKey]: pkValue },
-      UpdateExpression: `set #updateKey = :updateValue`,
-      ExpressionAttributeValues: {
-        ":updateValue": updateValue,
-        ":pkValue": pkValue,
+      Key: {
+        [pkKey]: pkValue,
       },
       ExpressionAttributeNames: {
-        "#updateKey": updateKey,
         "#pkKey": pkKey,
       },
-      ReturnValues: "ALL_NEW",
+      ExpressionAttributeValues: {
+        ":pkValue": pkValue,
+      },
       ConditionExpression: `#pkKey = :pkValue`,
     };
     if (skKey && skValue) {
       params.Key[skKey] = skValue;
     }
 
-    const res = await ddbClient.send(new UpdateCommand(params));
-
-    return res.Attributes;
-  },
-
-  batchWrite: async ({ tableName, data }: { tableName: string; data: any[] }) => {
-    const formattedRequestItems = data.map((item) => ({
-      PutRequest: {
-        Item: item,
-      },
-    }));
-
-    return batch25(formattedRequestItems, tableName);
+    return await docClient.send(new DeleteCommand(params));
   },
 };
 
 export default Dynamo;
-
-const batch25 = async (requests: any, tableName: string) => {
-  let batchNo = 0;
-
-  while (requests.length > 0) {
-    batchNo += 1;
-    console.log({ batchNo });
-    const batch = requests.splice(0, 25);
-
-    const params: BatchWriteCommandInput = {
-      RequestItems: {
-        [tableName]: batch,
-      },
-    };
-
-    await ddbClient.send(new BatchWriteCommand(params));
-  }
-  return;
-};
