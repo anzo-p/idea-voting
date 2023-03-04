@@ -33,6 +33,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     await Dynamo.write({ tableName, data });
 
     return formatJSONResponse({
+      statusCode: 201,
       body: {
         message: "Idea created",
         id: data.id,

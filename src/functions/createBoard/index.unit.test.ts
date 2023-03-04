@@ -1,28 +1,6 @@
-import { PutCommand } from "@aws-sdk/lib-dynamodb";
+import { mockSend } from "src/__mock__/mockDynamoDBClient";
 
 import { handler } from "./index";
-
-const mockSend = {
-  send: jest.fn().mockImplementation(() => {
-    return {
-      promise: jest.fn(),
-    };
-  }),
-};
-
-jest.mock("@aws-sdk/client-dynamodb", () => {
-  const originalModule = jest.requireActual("@aws-sdk/client-dynamodb");
-
-  return {
-    __esModule: true,
-    ...originalModule,
-    DynamoDBClient: jest.fn().mockImplementation(() => {
-      return {
-        send: (a: PutCommand) => mockSend.send(a),
-      };
-    }),
-  };
-});
 
 describe("createBoard", () => {
   afterEach(() => {
@@ -48,12 +26,12 @@ describe("createBoard", () => {
 
     const response = await handler(event);
     const responseBody = JSON.parse(response.body);
-    const puCommand = mockSend.send.mock.calls[0][0].input;
+    const puCommand = mockSend.mock.calls[0][0].input;
 
     expect(response.statusCode).toBe(201);
     expect(responseBody.message).toBe("board created");
 
-    expect(mockSend.send).toBeCalledTimes(1);
+    expect(mockSend).toBeCalledTimes(1);
 
     expect(puCommand.TableName).toEqual("test-single-table");
     expect(puCommand.Item.boardName).toEqual("boardName");
@@ -74,10 +52,10 @@ describe("createBoard", () => {
     };
 
     const response = await handler(event);
-    const puCommand = mockSend.send.mock.calls[0][0].input;
+    const puCommand = mockSend.mock.calls[0][0].input;
 
     expect(response.statusCode).toBe(201);
-    expect(mockSend.send).toBeCalledTimes(1);
+    expect(mockSend).toBeCalledTimes(1);
     expect(puCommand.Item.isPublic).toEqual(false);
   });
 
@@ -90,10 +68,10 @@ describe("createBoard", () => {
     };
 
     const response = await handler(event);
-    const puCommand = mockSend.send.mock.calls[0][0].input;
+    const puCommand = mockSend.mock.calls[0][0].input;
 
     expect(response.statusCode).toBe(201);
-    expect(mockSend.send).toBeCalledTimes(1);
+    expect(mockSend).toBeCalledTimes(1);
     expect(puCommand.Item.description).toEqual("");
   });
 
@@ -108,10 +86,10 @@ describe("createBoard", () => {
     };
 
     const response = await handler(event);
-    const puCommand = mockSend.send.mock.calls[0][0].input;
+    const puCommand = mockSend.mock.calls[0][0].input;
 
     expect(response.statusCode).toBe(201);
-    expect(mockSend.send).toBeCalledTimes(1);
+    expect(mockSend).toBeCalledTimes(1);
     expect(puCommand.Item.ownerId).toEqual("anonymous");
   });
 
@@ -129,7 +107,7 @@ describe("createBoard", () => {
 
     expect(response.statusCode).toBe(400);
     expect(responseBody.message).toBe("'name' is required'");
-    expect(mockSend.send).toBeCalledTimes(0);
+    expect(mockSend).toBeCalledTimes(0);
   });
 
   test("500 bad request - on general error will not store into db", async () => {
@@ -139,6 +117,6 @@ describe("createBoard", () => {
     const response = await handler(event);
 
     expect(response.statusCode).toBe(500);
-    expect(mockSend.send).toBeCalledTimes(0);
+    expect(mockSend).toBeCalledTimes(0);
   });
 });
