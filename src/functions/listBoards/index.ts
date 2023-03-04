@@ -14,7 +14,7 @@ export const handler = async () => {
       limit: 10,
     });
 
-    const result = boards.map(({ pk, sk, ...rest }) => rest).filter((board) => board.isPublic);
+    const result = publicBoards(boards).map(({ pk, sk, ...rest }) => rest);
 
     return formatJSONResponse({
       body: result,
@@ -26,3 +26,5 @@ export const handler = async () => {
     });
   }
 };
+
+export const publicBoards = (boards: BoardRecord[]) => boards.filter((board) => board.isPublic);

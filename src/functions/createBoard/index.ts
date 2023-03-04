@@ -21,15 +21,17 @@ export const handler = async (event: APIGatewayProxyEvent) => {
 
     const { name, description = "", isPublic = false } = body as CreateBoardBody;
 
+    const now = Date.now();
+
     const data: BoardRecord = {
       id: uuid(),
       pk: "board",
-      sk: Date.now().toString(),
+      sk: now.toString(),
       ownerId: getUserId(event),
       boardName: name,
       description,
       isPublic,
-      date: Date.now(),
+      date: now,
     };
 
     await Dynamo.write({ tableName, data });

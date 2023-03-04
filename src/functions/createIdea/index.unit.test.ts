@@ -1,6 +1,6 @@
-import { v4 as uuid } from "uuid";
-
 import { mockSend } from "src/__mock__/mockDynamoDBClient";
+
+import { v4 as uuid } from "uuid";
 
 import { handler } from ".";
 
