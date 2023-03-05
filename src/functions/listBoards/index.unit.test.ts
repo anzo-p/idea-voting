@@ -6,11 +6,7 @@ import { v4 as uuid } from "uuid";
 import { BoardRecord } from "src/types/dynamo";
 import { handler, publicBoards } from "./index";
 
-const boardIds = [uuid(), uuid()].map((id) => {
-  return { id };
-});
-
-const expectedFetch: Record<string, any>[] = boardIds.map((id) => {
+const expectedFetch: Record<string, any>[] = [uuid(), uuid()].map((id) => {
   return {
     id,
     pk: "board",

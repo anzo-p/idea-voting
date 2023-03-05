@@ -2,7 +2,7 @@ import { APIGatewayProxyEvent } from "aws-lambda";
 
 import { formatJSONResponse } from "@libs/APIResponses";
 import Dynamo from "@libs/Dynamo";
-import { BoardRecord, IdeaRecord } from "src/types/dynamo";
+import { BoardRecord, IdeaRecord, VoteRecord } from "src/types/dynamo";
 
 export const handler = async (event: APIGatewayProxyEvent) => {
   try {
@@ -39,7 +39,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       });
 
       const ideas = ideasData.map(async ({ pk, sk, boardId, ...idea }) => {
-        const votes = await Dynamo.query<IdeaRecord>({
+        const votes = await Dynamo.query<VoteRecord>({
           tableName,
           index: "gsi1",
           pkKey: "pk",
