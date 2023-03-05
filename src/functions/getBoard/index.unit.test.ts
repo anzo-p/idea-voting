@@ -50,39 +50,44 @@ const expectedVotesFetch = (ideaId: string, voteCount: number) => {
   });
 };
 
+// @ts-ignore
+const event: APIGatewayProxyEvent = {
+  pathParameters: {
+    boardId,
+  },
+};
+
+// @ts-ignore
+const getBoardResult: GetCommandOutput = {
+  Item: expectedBoardFetch,
+};
+
+// @ts-ignore
+const queryIdeasResult: QueryCommandOutput = {
+  Items: expectedIdeasFetch,
+};
+
+// @ts-ignore
+const queryIdea1VotesResult: QueryCommandOutput = {
+  Items: expectedVotesFetch(expectedIdeasFetch[0].id, 1),
+};
+
+// @ts-ignore
+const queryIdea2VotesResult: QueryCommandOutput = {
+  Items: expectedVotesFetch(expectedIdeasFetch[1].id, 2),
+};
+
+// @ts-ignore
+const queryResultEmpty: QueryCommandOutput = {
+  Items: [],
+};
+
 describe("getBoard", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   test("200 success", async () => {
-    // @ts-ignore
-    const event: APIGatewayProxyEvent = {
-      pathParameters: {
-        boardId,
-      },
-    };
-
-    // @ts-ignore
-    const getBoardResult: GetCommandOutput = {
-      Item: expectedBoardFetch,
-    };
-
-    // @ts-ignore
-    const queryIdeasResult: QueryCommandOutput = {
-      Items: expectedIdeasFetch,
-    };
-
-    // @ts-ignore
-    const queryIdea1VotesResult: QueryCommandOutput = {
-      Items: expectedVotesFetch(expectedIdeasFetch[0].id, 1),
-    };
-
-    // @ts-ignore
-    const queryIdea2VotesResult: QueryCommandOutput = {
-      Items: expectedVotesFetch(expectedIdeasFetch[1].id, 2),
-    };
-
     mockSend
       .mockReturnValueOnce(getBoardResult)
       .mockReturnValueOnce(queryIdeasResult)
@@ -133,5 +138,44 @@ describe("getBoard", () => {
     expect(responseBody.ideas[0].description).toEqual(highestRankIdea.description);
     expect(responseBody.ideas[0].date).toEqual(highestRankIdea.date);
     expect(responseBody.ideas[0].votes).toEqual(highestRankIdea.votes);
+  });
+
+  test("200 - ideas have no votes", async () => {
+    mockSend
+      .mockReturnValueOnce(getBoardResult)
+      .mockReturnValueOnce(queryIdeasResult)
+      .mockReturnValueOnce(queryResultEmpty)
+      .mockReturnValueOnce(queryResultEmpty);
+
+    const response = await handler(event);
+    const responseBody = JSON.parse(response.body);
+
+    expect(response.statusCode).toBe(200);
+    expect(responseBody.id).toEqual(expectedBoardFetch.id);
+
+    for (const idea of responseBody.ideas) {
+      expect(idea.votes).toEqual(0);
+    }
+  });
+
+  test("200 - board has no ideas", async () => {
+    mockSend.mockReturnValueOnce(getBoardResult).mockReturnValueOnce(queryResultEmpty);
+
+    const response = await handler(event);
+    const responseBody = JSON.parse(response.body);
+
+    expect(response.statusCode).toBe(200);
+    expect(responseBody.id).toEqual(expectedBoardFetch.id);
+    expect(responseBody.ideas.length).toEqual(0);
+  });
+
+  test("400 - path variable 'boardId' is required", async () => {
+    // @ts-ignore
+    const eventMissingBoardId: APIGatewayProxyEvent = {};
+
+    const response = await handler(eventMissingBoardId);
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toStrictEqual(JSON.stringify({ message: "path variable 'boardId' is required" }));
   });
 });

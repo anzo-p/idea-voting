@@ -14,7 +14,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       return formatJSONResponse({
         statusCode: 400,
         body: {
-          message: "path variable 'boardId' is required'",
+          message: "path variable 'boardId' is required",
         },
       });
     }
