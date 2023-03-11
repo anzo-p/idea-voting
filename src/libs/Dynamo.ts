@@ -11,7 +11,15 @@ import {
   UpdateCommandInput,
 } from "@aws-sdk/lib-dynamodb";
 
-const client = new DynamoDBClient({});
+let options = {};
+if (process.env.JEST_WORKER_ID) {
+  options = {
+    endpoint: "http://localhost:8000",
+    region: "local-env",
+  };
+}
+
+const client = new DynamoDBClient(options);
 
 type Item = Record<string, AttributeValue>;
 

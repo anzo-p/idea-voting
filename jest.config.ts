@@ -1,11 +1,12 @@
+import type { JestConfigWithTsJest } from "ts-jest";
+
 import { pathsToModuleNameMapper } from "ts-jest";
 import { compilerOptions } from "./tsconfig.json";
-import type { JestConfigWithTsJest } from "ts-jest";
 
 const jestConfig: JestConfigWithTsJest = {
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths),
   modulePaths: [compilerOptions.baseUrl],
-  preset: "ts-jest",
+  preset: "@shelf/jest-dynamodb",
   roots: ["<rootDir>"],
   setupFiles: ["<rootDir>/setEnvVars.js"],
   testEnvironment: "node",
