@@ -51,7 +51,7 @@ describe("createBoard", () => {
 
     expect(response.statusCode).toBe(201);
     expect(mockSend).toBeCalledTimes(1);
-    expect(puCommand.Item.description).toBeUndefined();
+    expect(puCommand.Item.description).toBe("");
   });
 
   test("400 bad request - on invalid payload will not store into db", async () => {

@@ -23,6 +23,6 @@ export interface VoteRecord {
   id: string;
   pk: string;
   sk: string;
-  userId: string,
+  userId: string;
   ideaId: string;
 }

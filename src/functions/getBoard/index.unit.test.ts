@@ -22,13 +22,13 @@ const expectedBoardFetch: BoardRecord = {
   date: Date.now(),
 };
 
-const expectedIdeasFetch: Record<string, any>[] = ids(2).map((id) => {
+const expectedIdeasFetch: Record<string, any>[] = ids(2).map((ideaId) => {
   return {
-    id,
+    id: ideaId,
     pk: `idea-${boardId}`,
     sk: Date.now().toString(),
     boardId,
-    title: `Brilliant idea, number ${id}`,
+    title: `Brilliant idea, number ${ideaId}`,
     description: "maybe doable, hopefully",
     date: Date.now(),
   };

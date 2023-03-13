@@ -16,14 +16,14 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       return formatJSONResponse({
         statusCode: 400,
         body: {
-          message: "'ideaId' is required'",
+          message: "'ideaId' is required",
         },
       });
     }
 
     const userId = getUserId(event);
 
-    const alreadyVoted = await Dynamo.query({
+    const alreadyVoted = await Dynamo.query<VoteRecord>({
       tableName,
       index: "gsi1",
       pkKey: "pk",
@@ -54,7 +54,8 @@ export const handler = async (event: APIGatewayProxyEvent) => {
     return formatJSONResponse({
       body: {
         message: `You have voted on this idea`,
-        id: data.id,
+        ideaId,
+        voteId: data.id,
       },
     });
   } catch (error) {

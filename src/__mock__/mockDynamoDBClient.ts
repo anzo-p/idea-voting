@@ -15,3 +15,8 @@ jest.doMock("@aws-sdk/client-dynamodb", () => {
     }),
   };
 });
+
+// @ts-ignore
+export const emptyResult: QueryCommandOutput = {
+  Items: [],
+};

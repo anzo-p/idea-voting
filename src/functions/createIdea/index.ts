@@ -26,7 +26,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
       sk: Date.now().toString(),
       boardId,
       title,
-      description,
+      description: description || "",
       date: Date.now(),
     };
 

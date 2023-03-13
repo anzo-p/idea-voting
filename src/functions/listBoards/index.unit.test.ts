@@ -1,4 +1,4 @@
-import { mockSend } from "src/__mock__/mockDynamoDBClient";
+import { mockSend, emptyResult } from "src/__mock__/mockDynamoDBClient";
 
 import { QueryCommandOutput } from "@aws-sdk/client-dynamodb";
 import { v4 as uuid } from "uuid";
@@ -6,13 +6,13 @@ import { v4 as uuid } from "uuid";
 import { BoardRecord } from "src/types/dynamo";
 import { handler, publicBoards } from "./index";
 
-const expectedFetch: Record<string, any>[] = [uuid(), uuid()].map((id) => {
+const expectedFetch: Record<string, any>[] = [uuid(), uuid()].map((boardId) => {
   return {
-    id,
+    id: boardId,
     pk: "board",
     sk: Date.now().toString(),
     ownerId: uuid(),
-    boardName: `board number ${id}`,
+    boardName: `board number ${boardId}`,
     description: "a board of some despcription or another",
     isPublic: true,
     date: Date.now(),
@@ -49,11 +49,6 @@ describe("createBoard", () => {
   });
 
   test("200 success - empty response", async () => {
-    // @ts-ignore
-    const emptyResult: QueryCommandOutput = {
-      Items: [],
-    };
-
     mockSend.mockReturnValue(emptyResult);
 
     const response = await handler();

@@ -1,15 +1,6 @@
 import { AttributeValue, DynamoDBClient } from "@aws-sdk/client-dynamodb";
 
-import {
-  DeleteCommand,
-  GetCommand,
-  PutCommand,
-  PutCommandInput,
-  QueryCommand,
-  QueryCommandInput,
-  UpdateCommand,
-  UpdateCommandInput,
-} from "@aws-sdk/lib-dynamodb";
+import { GetCommand, PutCommand, PutCommandInput, QueryCommand, QueryCommandInput } from "@aws-sdk/lib-dynamodb";
 
 let options = {};
 if (process.env.JEST_WORKER_ID) {
@@ -32,47 +23,6 @@ const Dynamo = {
 
     await client.send(new PutCommand(params));
     return params.Item as T;
-  },
-
-  update: async ({
-    tableName,
-    pkKey,
-    pkValue,
-    skKey,
-    skValue,
-    updateKey,
-    updateValue,
-  }: {
-    tableName: string;
-    pkKey: string;
-    pkValue: string;
-    skKey?: string;
-    skValue?: string;
-    updateKey: string;
-    updateValue: string;
-  }) => {
-    const params: UpdateCommandInput = {
-      TableName: tableName,
-      Key: { [pkKey]: pkValue },
-      UpdateExpression: `set #updateKey = :updateValue`,
-      ExpressionAttributeValues: {
-        ":updateValue": updateValue,
-        ":pkValue": pkValue,
-      },
-      ExpressionAttributeNames: {
-        "#updateKey": updateKey,
-        "#pkKey": pkKey,
-      },
-      ReturnValues: "ALL_NEW",
-      ConditionExpression: `#pkKey = :pkValue`,
-    };
-    if (skKey && skValue) {
-      params.Key[skKey] = skValue;
-    }
-
-    const res = await client.send(new UpdateCommand(params));
-
-    return res.Attributes;
   },
 
   get: async <T = Item>({
@@ -176,39 +126,6 @@ const Dynamo = {
     const res = await client.send(command);
 
     return res.Items as T[];
-  },
-
-  delete: async ({
-    pkKey = "id",
-    pkValue,
-    skKey,
-    skValue,
-    tableName,
-  }: {
-    pkKey?: string;
-    pkValue: string;
-    skKey?: string;
-    skValue?: string;
-    tableName: string;
-  }) => {
-    const params = {
-      TableName: tableName,
-      Key: {
-        [pkKey]: pkValue,
-      },
-      ExpressionAttributeNames: {
-        "#pkKey": pkKey,
-      },
-      ExpressionAttributeValues: {
-        ":pkValue": pkValue,
-      },
-      ConditionExpression: `#pkKey = :pkValue`,
-    };
-    if (skKey && skValue) {
-      params.Key[skKey] = skValue;
-    }
-
-    return await client.send(new DeleteCommand(params));
   },
 };
 
