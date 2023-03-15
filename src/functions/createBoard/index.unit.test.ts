@@ -1,6 +1,6 @@
 import { mockSend } from "src/__mock__/mockDynamoDBClient";
 
-import { handler } from "./index";
+import { handler } from ".";
 
 describe("createBoard", () => {
   afterEach(() => {

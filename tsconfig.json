@@ -1,5 +1,4 @@
 {
-  "extends": "./tsconfig.paths.json",
   "compilerOptions": {
     "baseUrl": ".",
     "esModuleInterop": true,
@@ -9,6 +8,7 @@
     "noUnusedParameters": true,
     "outDir": "lib",
     "paths": {
+      "@functions/*": ["src/functions/*"],
       "@libs/*": ["src/libs/*"]
     },
     "removeComments": true,

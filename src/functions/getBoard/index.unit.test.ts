@@ -4,7 +4,6 @@ import { GetCommandOutput, QueryCommandOutput } from "@aws-sdk/lib-dynamodb";
 import { v4 as uuid } from "uuid";
 
 import { BoardRecord } from "src/types/dynamo";
-
 import { handler } from ".";
 
 const boardId = uuid();
@@ -96,29 +95,29 @@ describe("getBoard", () => {
 
     const response = await handler(event);
     const responseBody = JSON.parse(response.body);
-    const queryBoard = mockSend.mock.calls[0][0].input;
-    const queryIdeas = mockSend.mock.calls[1][0].input;
-    const queryIdea1Votes = mockSend.mock.calls[2][0].input;
-    const queryIdea2Votes = mockSend.mock.calls[3][0].input;
+    const queryBoardCommand = mockSend.mock.calls[0][0].input;
+    const queryIdeasCommand = mockSend.mock.calls[1][0].input;
+    const queryIdea1VotesCommand = mockSend.mock.calls[2][0].input;
+    const queryIdea2VotesCommand = mockSend.mock.calls[3][0].input;
 
-    expect(queryBoard.TableName).toEqual("test-single-table");
-    expect(queryBoard.Key).toEqual({ id: boardId });
+    expect(queryBoardCommand.TableName).toEqual("test-single-table");
+    expect(queryBoardCommand.Key).toEqual({ id: boardId });
 
-    expect(queryIdeas.TableName).toEqual("test-single-table");
-    expect(queryIdeas.KeyConditionExpression).toEqual("pk = :pkvalue");
-    expect(queryIdeas.ExpressionAttributeValues).toEqual({
+    expect(queryIdeasCommand.TableName).toEqual("test-single-table");
+    expect(queryIdeasCommand.KeyConditionExpression).toEqual("pk = :pkvalue");
+    expect(queryIdeasCommand.ExpressionAttributeValues).toEqual({
       ":pkvalue": `idea-${boardId}`,
     });
 
-    expect(queryIdea1Votes.TableName).toEqual("test-single-table");
-    expect(queryIdea1Votes.KeyConditionExpression).toEqual("pk = :pkvalue");
-    expect(queryIdea1Votes.ExpressionAttributeValues).toEqual({
+    expect(queryIdea1VotesCommand.TableName).toEqual("test-single-table");
+    expect(queryIdea1VotesCommand.KeyConditionExpression).toEqual("pk = :pkvalue");
+    expect(queryIdea1VotesCommand.ExpressionAttributeValues).toEqual({
       ":pkvalue": `vote-${expectedIdeasFetch[0].id}`,
     });
 
-    expect(queryIdea2Votes.TableName).toEqual("test-single-table");
-    expect(queryIdea2Votes.KeyConditionExpression).toEqual("pk = :pkvalue");
-    expect(queryIdea2Votes.ExpressionAttributeValues).toEqual({
+    expect(queryIdea2VotesCommand.TableName).toEqual("test-single-table");
+    expect(queryIdea2VotesCommand.KeyConditionExpression).toEqual("pk = :pkvalue");
+    expect(queryIdea2VotesCommand.ExpressionAttributeValues).toEqual({
       ":pkvalue": `vote-${expectedIdeasFetch[1].id}`,
     });
 

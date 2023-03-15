@@ -6,7 +6,7 @@ import { compilerOptions } from "./tsconfig.json";
 const jestConfig: JestConfigWithTsJest = {
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths),
   modulePaths: [compilerOptions.baseUrl],
-  preset: "@shelf/jest-dynamodb",
+  preset: "ts-jest",
   roots: ["<rootDir>"],
   setupFiles: ["<rootDir>/setEnvVars.js"],
   testEnvironment: "node",

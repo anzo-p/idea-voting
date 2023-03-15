@@ -2,15 +2,7 @@ import { AttributeValue, DynamoDBClient } from "@aws-sdk/client-dynamodb";
 
 import { GetCommand, PutCommand, PutCommandInput, QueryCommand, QueryCommandInput } from "@aws-sdk/lib-dynamodb";
 
-let options = {};
-if (process.env.JEST_WORKER_ID) {
-  options = {
-    endpoint: "http://localhost:8000",
-    region: "local-env",
-  };
-}
-
-const client = new DynamoDBClient(options);
+const client = new DynamoDBClient({});
 
 type Item = Record<string, AttributeValue>;
 

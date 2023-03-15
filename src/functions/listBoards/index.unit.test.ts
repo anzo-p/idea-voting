@@ -4,7 +4,7 @@ import { QueryCommandOutput } from "@aws-sdk/client-dynamodb";
 import { v4 as uuid } from "uuid";
 
 import { BoardRecord } from "src/types/dynamo";
-import { handler, publicBoards } from "./index";
+import { handler, publicBoards } from ".";
 
 const expectedFetch: Record<string, any>[] = [uuid(), uuid()].map((boardId) => {
   return {
@@ -33,7 +33,7 @@ describe("createBoard", () => {
     mockSend.mockReturnValue(result);
 
     const response = await handler();
-    const query = mockSend.mock.calls[0][0].input;
+    const queryCommand = mockSend.mock.calls[0][0].input;
     const expectedRespnse = expectedFetch.map(({ pk, sk, ...rest }) => rest);
 
     expect(response.statusCode).toBe(200);
@@ -41,11 +41,11 @@ describe("createBoard", () => {
 
     expect(mockSend).toBeCalledTimes(1);
 
-    expect(query.TableName).toEqual("test-single-table");
-    expect(query.IndexName).toEqual("gsi1");
-    expect(query.KeyConditionExpression).toEqual("pk = :pkvalue");
-    expect(query.ExpressionAttributeValues).toEqual({ ":pkvalue": "board" });
-    expect(query.Limit).toEqual(10);
+    expect(queryCommand.TableName).toEqual("test-single-table");
+    expect(queryCommand.IndexName).toEqual("gsi1");
+    expect(queryCommand.KeyConditionExpression).toEqual("pk = :pkvalue");
+    expect(queryCommand.ExpressionAttributeValues).toEqual({ ":pkvalue": "board" });
+    expect(queryCommand.Limit).toEqual(10);
   });
 
   test("200 success - empty response", async () => {
