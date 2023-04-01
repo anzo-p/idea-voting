@@ -6,7 +6,7 @@ import { BoardRecord, IdeaRecord, VoteRecord } from "src/types/dynamo";
 
 export const handler = async (event: APIGatewayProxyEvent) => {
   try {
-    const tableName = process.env.singleTable;
+    const tableName = process.env.IDEA_VOTING_TABLE;
 
     const boardId = event.pathParameters?.boardId;
 

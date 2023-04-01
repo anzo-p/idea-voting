@@ -66,14 +66,14 @@ describe("voteOnIdea", () => {
 
     expect(mockSend).toBeCalledTimes(2);
 
-    expect(queryVotesCommand.TableName).toBe("test-single-table");
+    expect(queryVotesCommand.TableName).toBe("test-idea-voting-table");
     expect(queryVotesCommand.KeyConditionExpression).toBe("pk = :pkvalue AND sk = :skkeyvalue");
     expect(queryVotesCommand.ExpressionAttributeValues).toStrictEqual({
       ":pkvalue": `vote-${ideaId}`,
       ":skkeyvalue": userId,
     });
 
-    expect(putVoteCommand.TableName).toBe("test-single-table");
+    expect(putVoteCommand.TableName).toBe("test-idea-voting-table");
     expect(putVoteCommand.Item.id).toBe(responseBody.voteId);
     expect(putVoteCommand.Item.pk).toBe(`vote-${ideaId}`);
     expect(putVoteCommand.Item.sk).toBe(userId);

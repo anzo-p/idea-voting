@@ -4,7 +4,7 @@ const DynamoResources: AWS["resources"]["Resources"] = {
   ideasTable: {
     Type: "AWS::DynamoDB::Table",
     Properties: {
-      TableName: "${self:custom.tables.singleTable}",
+      TableName: "${self:custom.tables.ideaVotingTable}",
       AttributeDefinitions: [
         {
           AttributeName: "id",

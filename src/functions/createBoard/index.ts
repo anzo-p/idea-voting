@@ -9,7 +9,7 @@ import { getUserId } from "@libs/APIGateway";
 
 export const handler = async (event: APIGatewayProxyEvent) => {
   try {
-    const tableName = process.env.singleTable;
+    const tableName = process.env.IDEA_VOTING_TABLE;
 
     const body = JSON.parse(event.body!);
 

@@ -100,22 +100,22 @@ describe("getBoard", () => {
     const queryIdea1VotesCommand = mockSend.mock.calls[2][0].input;
     const queryIdea2VotesCommand = mockSend.mock.calls[3][0].input;
 
-    expect(queryBoardCommand.TableName).toEqual("test-single-table");
+    expect(queryBoardCommand.TableName).toEqual("test-idea-voting-table");
     expect(queryBoardCommand.Key).toEqual({ id: boardId });
 
-    expect(queryIdeasCommand.TableName).toEqual("test-single-table");
+    expect(queryIdeasCommand.TableName).toEqual("test-idea-voting-table");
     expect(queryIdeasCommand.KeyConditionExpression).toEqual("pk = :pkvalue");
     expect(queryIdeasCommand.ExpressionAttributeValues).toEqual({
       ":pkvalue": `idea-${boardId}`,
     });
 
-    expect(queryIdea1VotesCommand.TableName).toEqual("test-single-table");
+    expect(queryIdea1VotesCommand.TableName).toEqual("test-idea-voting-table");
     expect(queryIdea1VotesCommand.KeyConditionExpression).toEqual("pk = :pkvalue");
     expect(queryIdea1VotesCommand.ExpressionAttributeValues).toEqual({
       ":pkvalue": `vote-${expectedIdeasFetch[0].id}`,
     });
 
-    expect(queryIdea2VotesCommand.TableName).toEqual("test-single-table");
+    expect(queryIdea2VotesCommand.TableName).toEqual("test-idea-voting-table");
     expect(queryIdea2VotesCommand.KeyConditionExpression).toEqual("pk = :pkvalue");
     expect(queryIdea2VotesCommand.ExpressionAttributeValues).toEqual({
       ":pkvalue": `vote-${expectedIdeasFetch[1].id}`,

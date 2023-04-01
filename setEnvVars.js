@@ -1,1 +1,1 @@
-process.env.singleTable = "test-single-table";
+process.env.IDEA_VOTING_TABLE = "test-idea-voting-table";

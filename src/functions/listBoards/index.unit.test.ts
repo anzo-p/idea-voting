@@ -41,7 +41,7 @@ describe("createBoard", () => {
 
     expect(mockSend).toBeCalledTimes(1);
 
-    expect(queryCommand.TableName).toEqual("test-single-table");
+    expect(queryCommand.TableName).toEqual("test-idea-voting-table");
     expect(queryCommand.IndexName).toEqual("gsi1");
     expect(queryCommand.KeyConditionExpression).toEqual("pk = :pkvalue");
     expect(queryCommand.ExpressionAttributeValues).toEqual({ ":pkvalue": "board" });

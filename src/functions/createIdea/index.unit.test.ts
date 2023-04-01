@@ -30,7 +30,7 @@ describe("createBoard", () => {
 
     expect(mockSend).toBeCalledTimes(1);
 
-    expect(puCommand.TableName).toEqual("test-single-table");
+    expect(puCommand.TableName).toEqual("test-idea-voting-table");
     expect(puCommand.Item.boardId).toEqual(testBoardID);
     expect(puCommand.Item.pk).toEqual(`idea-${testBoardID}`);
     expect(puCommand.Item.title).toEqual("Gread Idea");

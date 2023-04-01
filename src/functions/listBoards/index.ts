@@ -4,7 +4,9 @@ import { BoardRecord } from "src/types/dynamo";
 
 export const handler = async () => {
   try {
-    const tableName = process.env.singleTable;
+    const tableName = process.env.IDEA_VOTING_TABLE;
+
+    console.log("tableName", tableName);
 
     const boards = await Dynamo.query<BoardRecord>({
       tableName,
@@ -14,7 +16,13 @@ export const handler = async () => {
       limit: 10,
     });
 
-    const result = publicBoards(boards).map(({ pk, sk, ...rest }) => rest);
+    console.log("boards", boards);
+
+    const result = publicBoards(boards).map(({ pk, sk, ...rest }) => {
+      return rest;
+    });
+
+    console.log("result", result);
 
     return formatJSONResponse({
       body: result,

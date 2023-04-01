@@ -17,7 +17,7 @@ const serverlessConfiguration: AWS = {
       target: "node16",
     },
     tables: {
-      singleTable: "${sls:stage}-${self:service}-single-table",
+      ideaVotingTable: "${sls:stage}-${self:service}-table",
     },
   },
   frameworkVersion: "3",
@@ -30,15 +30,15 @@ const serverlessConfiguration: AWS = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
-      singleTable: "${self:custom.tables.singleTable}",
+      IDEA_VOTING_TABLE: "${self:custom.tables.ideaVotingTable}",
     },
     iamRoleStatements: [
       {
         Effect: "Allow",
         Action: "dynamodb:*",
         Resource: [
-          "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.tables.singleTable}",
-          "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.tables.singleTable}/index/gsi1",
+          "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.tables.ideaVotingTable}",
+          "arn:aws:dynamodb:${self:provider.region}:${aws:accountId}:table/${self:custom.tables.ideaVotingTable}/index/gsi1",
         ],
       },
     ],
@@ -57,7 +57,7 @@ const serverlessConfiguration: AWS = {
         },
       },
       DynamoTableName: {
-        Value: "${self:custom.tables.singleTable}",
+        Value: "${self:custom.tables.ideaVotingTable}",
         Export: {
           Name: "DynamoTableName",
         },
