@@ -16,7 +16,7 @@ const functions: AWS["functions"] = {
         http: {
           method: "POST",
           path: "/boards",
-          // authorizer,
+          authorizer,
         },
       },
     ],
@@ -53,7 +53,7 @@ const functions: AWS["functions"] = {
         http: {
           method: "POST",
           path: "/ideas",
-          // authorizer,
+          authorizer,
         },
       },
     ],
@@ -66,7 +66,7 @@ const functions: AWS["functions"] = {
         http: {
           method: "POST",
           path: "/ideas/{ideaId}",
-          // authorizer,
+          authorizer,
         },
       },
     ],
